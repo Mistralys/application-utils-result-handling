@@ -52,14 +52,25 @@ if(!$result->isValid()) {
 }
 ```
 
+> NOTE: The `isValid()` method returns `true` if 
+> no state was set, or the state is of the success type. 
+
 ## Collection of results
 
+### Introduction
+
 If an operation can have multiple possible result states,
-like a validation operation, for example, you can use the 
-collection class.
+like a validation operation, for example, you can use the
+result collection class.
 
 Every call to `makeError()`, `makeWarning()` or `makeSuccess()`
 will add a new result instance to the collection.
+
+> All result types are stored in the collection, so it is
+> important to note that both failed and successful operations
+> can be tracked.
+
+### Quick Start 
 
 ```php
 use function AppUtils\operationCollection;
@@ -91,6 +102,69 @@ if(!$collection->isValid()) {
      $results = $collection->getResults();
      // do something with the results
 }
+```
+
+> NOTE: The `isValid()` method returns `true` if none of the
+> results in the collection are of the error or warning type.
+
+### Accessing the results
+
+Accessing results is made to be as easy as possible, with many
+different ways to get the information you need.
+
+```php
+use function AppUtils\operationCollection;
+
+$collection = operationCollection();
+
+// Get all results in the order they were added
+$results = $collection->getResults(); 
+
+// Get all errors
+$errors = $collection->getErrors();
+
+// Get all warnings
+$warnings = $collection->getWarnings();
+
+// Get all successes
+$successes = $collection->getSuccesses();
+
+// Get all notices
+$notices = $collection->getNotices();
+
+// Check if the collection contains any result of a specific type
+if($collection->isError()) {}
+if($collection->isWarning()) {}
+if($collection->isSuccess()) {}
+if($collection->isNotice()) {}
+
+// Check if the collection contains a specific result code
+if($collection->containsCode(1)) {
+    // do something
+}
+
+// Get all unique result codes
+$codes = $collection->getCodes();
+```
+
+### Counting results
+
+All result types can be counted individually, and the total
+number of results can be counted as well.
+
+```php
+use function AppUtils\operationCollection;
+
+$collection = operationCollection();
+
+// Count the total number of results
+$all = $collection->countResults();
+$errors = $collection->countErrors();
+$warnings = $collection->countWarnings();   
+$successes = $collection->countSuccesses();
+$notices = $collection->countNotices();
+    
+
 ```
 
 ## Extend the result classes
