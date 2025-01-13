@@ -26,13 +26,14 @@ If an operation can only have a single possible result state,
 you can use the `OperationResult` class.
 
 ```php
-use AppUtils\OperationResult;
+use function AppUtils\operationResult
 
 const ERROR_FILE_NOT_FOUND = 1;
 
 function doSomething() : OperationResult 
 {
-    $result = new OperationResult();
+    // Create a new result object using the global function
+    $result = operationResult();
     
     if(!file_exists('waldo.txt')) {
         return $result->makeError(
@@ -51,7 +52,48 @@ if(!$result->isValid()) {
 }
 ```
 
-## Extend the result class
+## Collection of results
+
+If an operation can have multiple possible result states,
+like a validation operation, for example, you can use the 
+collection class.
+
+Every call to `makeError()`, `makeWarning()` or `makeSuccess()`
+will add a new result instance to the collection.
+
+```php
+use function AppUtils\operationCollection;
+use AppUtils\OperationResult_Collection;
+
+const VALIDATION_ERROR_NAME_TOO_SHORT = 1;
+const VALIDATION_WARNING_NOT_RECOMMENDED_LENGTH = 2;
+
+function validateSomething() : OperationResult_Collection 
+{
+    $collection = operationCollection();
+    
+    $collection->makeError(
+        'The name must be at least 5 characters long',
+        VALIDATION_ERROR_NAME_TOO_SHORT
+    );
+    
+    $collection->makeWarning(
+        'The name must be at most 50 characters long',
+        VALIDATION_WARNING_NOT_RECOMMENDED_LENGTH
+    )
+    
+    return $collection;
+}
+
+$collection = validateSomething();
+
+if(!$collection->isValid()) {
+     $results = $collection->getResults();
+     // do something with the results
+}
+```
+
+## Extend the result classes
 
 Both the `OperationResult` and collection classes are designed to be extended, 
 so you can add your own custom methods to them. 
