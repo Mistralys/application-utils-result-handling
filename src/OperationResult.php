@@ -46,7 +46,7 @@ class OperationResult implements StringableInterface
     private string $label;
 
     /**
-    * @param object|NULL $subject The subject being validated. If NULL, an empty `stdClass` object will be used.
+    * @param object|NULL $subject The origin of the result message to retrieve again later. If NULL, an empty `stdClass` object will be used.
     * @param string|StringableInterface|NULL $label An optional human-readable label of the operation.
     */
     public function __construct(?object $subject=null, $label=null)
