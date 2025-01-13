@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace AppUtils;
 
+use AppUtils\Interfaces\StringableInterface;
+use stdClass;
 use Throwable;
 
 /**
@@ -24,7 +26,7 @@ use Throwable;
  * @subpackage OperationResult
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class OperationResult
+class OperationResult implements StringableInterface
 {
     public const TYPE_NOTICE = 'notice';
     public const TYPE_WARNING = 'warning';
@@ -46,10 +48,14 @@ class OperationResult
    /**
     * The subject being validated.
     * 
-    * @param object $subject
+    * @param object|NULL $subject If NULL, an {@see stdClass} instance will be used.
     */
-    public function __construct(object $subject)
+    public function __construct(?object $subject=null)
     {
+        if(is_null($subject)) {
+            $subject = new stdClass();
+        }
+
         $this->subject = $subject;
         
         self::$counter++;
@@ -267,5 +273,24 @@ class OperationResult
             $info->renderErrorMessage($withDeveloperInfo),
             $code
         );
+    }
+
+    public function __toString() : string
+    {
+        if(empty($this->message) && $this->code === 0) {
+            return '';
+        }
+
+        $string = strtoupper($this->getType());
+
+        if($this->code > 0) {
+            $string .= $this->getType(). ' #'.$this->code;
+        }
+
+        if(!empty($this->message)) {
+            $string .= ': '.$this->message.' ';
+        }
+
+        return $string;
     }
 }
